@@ -13,8 +13,10 @@ package manager for Windows.
 ### Manual usage
 
 Download the relevant zipfile for your architecture from the project
-release area. Unpack it into a directory of your choice. You can now
-run datasette using the extracted `python.exe` as `python -m datasette`.
+release area. Unpack it into a directory of your choice.
+
+The `datasette` binary is in the `Scripts` subdirectory of the unpacked
+archive.
 
 ### Installation with scoop
 

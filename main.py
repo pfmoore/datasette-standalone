@@ -11,7 +11,7 @@ import zipfile
 DATASETTE_VERSION = "0.47.2"
 
 # Used to release manifest bug fixes without incrementing datasette version.
-MANIFEST_BUILD_NUMBER = 0
+MANIFEST_BUILD_NUMBER = 1
 
 PYTHON_EMBED_VERSION = "3.8.5"
 
@@ -24,6 +24,8 @@ PYTHON_EMBED_URLS = {
     for variant in ["amd64", "win32"]
 }
 
+PIP_BOOTSTRAP = "https://bootstrap.pypa.io/get-pip.py"
+
 
 def retrieve_python(url: str, dl_dir: pathlib.Path, build_dir: pathlib.Path):
     archive = dl_dir.joinpath(url.rsplit("/", 1)[-1])
@@ -31,9 +33,30 @@ def retrieve_python(url: str, dl_dir: pathlib.Path, build_dir: pathlib.Path):
         urllib.request.urlretrieve(url, archive)
     with zipfile.ZipFile(archive) as zf:
         zf.extractall(build_dir)
+    pth_file = next(build_dir.glob("python*._pth"))
+
+    # Add "import site" to the _pth file
+    pth_data = pth_file.read_text(encoding="utf-8")
+    pth_data = pth_data + "\nimport site"
+    pth_file.write_text(pth_data, encoding="utf-8")
+
+
+def retrieve_pip(dl_dir: pathlib.Path, build_dir: pathlib.Path):
+    get_pip = dl_dir.joinpath(PIP_BOOTSTRAP.rsplit("/", 1)[-1])
+    if not get_pip.exists():
+        urllib.request.urlretrieve(PIP_BOOTSTRAP, get_pip)
+    target_python = build_dir.joinpath("python.exe")
+    subprocess.run(
+        [
+            os.fspath(target_python),
+            os.fspath(get_pip)
+        ],
+        check=True,
+    )
 
 
 def retrieve_datasette(build_dir: pathlib.Path):
+    target_python = build_dir.joinpath("python.exe")
     env = os.environ.copy()
     env.update({
         "PIP_REQUIRE_VIRTUALENV": "false",
@@ -41,13 +64,11 @@ def retrieve_datasette(build_dir: pathlib.Path):
     })
     subprocess.run(
         [
-            sys.executable,
+            os.fspath(target_python),
             "-m",
             "pip",
             "install",
             f"datasette=={DATASETTE_VERSION}",
-            "--target",
-            os.fspath(build_dir),
         ],
         env=env,
         check=True,
@@ -59,10 +80,6 @@ def create_archive(source: pathlib.Path, target: pathlib.Path):
         for dirpath, _, filenames in os.walk(source):
             # Don't need to package dist info.
             if os.path.splitext(dirpath)[-1] == ".dist-info":
-                continue
-            # Do not package entry points. They will be broken due
-            # to we installing to a different location anyway.
-            if dirpath == os.path.join(source, "bin"):
                 continue
             for fn in filenames:
                 absname = os.path.join(dirpath, fn)
@@ -89,7 +106,7 @@ def main(argv=None):
     for variant, url in PYTHON_EMBED_URLS.items():
         dist_name = f"datasette-standalone-{variant}-{DATASETTE_VERSION}"
         if MANIFEST_BUILD_NUMBER:
-            dist_name += f"+{MANIFEST_BUILD_NUMBER}"
+            dist_name += f"-{MANIFEST_BUILD_NUMBER}"
 
         build_dir = ns.build.joinpath(dist_name)
         if build_dir.exists():
@@ -107,6 +124,9 @@ def main(argv=None):
 
         print(f"Downloading {url}")
         retrieve_python(url, ns.build, build_dir)
+
+        print(f"Installing pip")
+        retrieve_pip(ns.build, build_dir)
 
         # pip would emit output so we don't.
         retrieve_datasette(build_dir)
