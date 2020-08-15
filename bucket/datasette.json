@@ -1,0 +1,12 @@
+{
+    "version": "0.47.2",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/pfmoore/datasette-standalone/releases/download/0.47.2/datasette-standalone-amd64-0.47.2.zip"
+        },
+        "32bit": {
+            "url": "https://github.com/pfmoore/datasette-standalone/releases/download/0.47.2/datasette-standalone-win32-0.47.2.zip"
+        }
+    },
+    "bin": [["python.exe", "pipx", "-m", "pipx"]]
+}
