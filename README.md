@@ -19,7 +19,7 @@ run datasette using the extracted `python.exe` as `python -m datasette`.
 ### Installation with scoop
 
 ```bash
-scoop bucket add https://github.com/pfmoore/datasette-standalone
+scoop bucket add datasette https://github.com/pfmoore/datasette-standalone
 scoop install datasette
 
 # Now run datasette
