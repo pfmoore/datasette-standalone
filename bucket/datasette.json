@@ -8,5 +8,5 @@
             "url": "https://github.com/pfmoore/datasette-standalone/releases/download/0.47.2/datasette-standalone-win32-0.47.2.zip"
         }
     },
-    "bin": [["python.exe", "pipx", "-m", "pipx"]]
+    "bin": [["python.exe", "datasette", "-m", "datasette"]]
 }
