@@ -8,10 +8,10 @@ import urllib.request
 import zipfile
 
 
-DATASETTE_VERSION = "0.47.2"
+DATASETTE_VERSION = "0.48"
 
 # Used to release manifest bug fixes without incrementing datasette version.
-MANIFEST_BUILD_NUMBER = 1
+MANIFEST_BUILD_NUMBER = 0
 
 PYTHON_EMBED_VERSION = "3.8.5"
 
