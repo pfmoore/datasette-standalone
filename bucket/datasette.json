@@ -1,11 +1,11 @@
 {
-    "version": "0.50",
+    "version": "0.50.1",
     "architecture": {
         "64bit": {
-            "url": "https://github.com/pfmoore/datasette-standalone/releases/download/0.50/datasette-standalone-amd64-0.50.zip"
+            "url": "https://github.com/pfmoore/datasette-standalone/releases/download/0.50.1/datasette-standalone-amd64-0.50.1.zip"
         },
         "32bit": {
-            "url": "https://github.com/pfmoore/datasette-standalone/releases/download/0.50/datasette-standalone-win32-0.50.zip"
+            "url": "https://github.com/pfmoore/datasette-standalone/releases/download/0.50.1/datasette-standalone-win32-0.50.1.zip"
         }
     },
     "bin": "Scripts/datasette.exe"
